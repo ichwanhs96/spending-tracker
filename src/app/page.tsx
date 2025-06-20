@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import SpendingForm from '@/components/SpendingForm';
 import SpendingList from '@/components/SpendingList';
+import SpendingCharts from '@/components/SpendingCharts';
 import VoiceSpending from '@/components/VoiceSpending';
 import Login from '@/components/Login';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,6 +14,7 @@ export default function Home() {
   const [spendingEntries, setSpendingEntries] = useState<SpendingEntry[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'manual' | 'voice'>('voice');
+  const [activeView, setActiveView] = useState<'list' | 'charts'>('list');
 
   useEffect(() => {
     if (isAuthorized) {
@@ -187,7 +189,7 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="py-6 sm:py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">
@@ -227,15 +229,44 @@ export default function Home() {
             </div>
 
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">
-                Recent Expenses
-              </h2>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  Recent Expenses
+                </h2>
+                
+                {/* View Toggle */}
+                <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                  <button
+                    onClick={() => setActiveView('list')}
+                    className={`px-3 py-1 text-xs sm:text-sm font-medium rounded-md transition-colors ${
+                      activeView === 'list'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    📋 List
+                  </button>
+                  <button
+                    onClick={() => setActiveView('charts')}
+                    className={`px-3 py-1 text-xs sm:text-sm font-medium rounded-md transition-colors ${
+                      activeView === 'charts'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    📊 Charts
+                  </button>
+                </div>
+              </div>
+              
               {dataLoading ? (
                 <div className="flex justify-center items-center h-32">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 </div>
-              ) : (
+              ) : activeView === 'list' ? (
                 <SpendingList entries={spendingEntries} />
+              ) : (
+                <SpendingCharts entries={spendingEntries} />
               )}
             </div>
           </div>
