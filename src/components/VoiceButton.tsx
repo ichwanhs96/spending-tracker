@@ -14,7 +14,6 @@ export default function VoiceButton({ onSpeechResult, onError, disabled = false 
   const [isListening, setIsListening] = useState(false);
   const [state, setState] = useState<VoiceState>('idle');
   const [transcript, setTranscript] = useState('');
-  const [finalTranscript, setFinalTranscript] = useState('');
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentFinalTranscriptRef = useRef<string>('');
@@ -27,6 +26,7 @@ export default function VoiceButton({ onSpeechResult, onError, disabled = false 
     }
 
     // Initialize speech recognition
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
     
@@ -45,7 +45,6 @@ export default function VoiceButton({ onSpeechResult, onError, disabled = false 
       setIsListening(true);
       setState('listening');
       setTranscript('');
-      setFinalTranscript('');
       currentFinalTranscriptRef.current = '';
       console.log('🎤 Started listening...');
     };
@@ -70,7 +69,6 @@ export default function VoiceButton({ onSpeechResult, onError, disabled = false 
       // Update both state and ref
       const fullTranscript = currentFinalTranscript + interimTranscript;
       setTranscript(fullTranscript);
-      setFinalTranscript(currentFinalTranscript);
       currentFinalTranscriptRef.current = currentFinalTranscript;
 
       console.log('🎤 Current transcript:', fullTranscript);
@@ -266,7 +264,7 @@ export default function VoiceButton({ onSpeechResult, onError, disabled = false 
         <div className="text-sm text-gray-600 max-w-xs text-center">
           <div className="font-medium mb-1">🎤 You said:</div>
           <div className="bg-gray-100 p-2 rounded text-xs">
-            "{transcript}"
+            {transcript}
           </div>
           {isListening && (
             <div className="text-xs text-blue-600 mt-1">

@@ -163,16 +163,16 @@ export default function VoiceSpending({ onSpendingDetected, disabled = false }: 
       <div className="text-center text-sm text-gray-600">
         <p className="mb-2">💡 Try saying something like:</p>
         <div className="space-y-1 text-xs">
-          <p>"I spent 680 yen on matcha latte at Doutor"</p>
-          <p>"Bought groceries for 25 dollars at Walmart"</p>
-          <p>"Paid 15.50 for lunch yesterday"</p>
+          <p>I spent 680 yen on matcha latte at Doutor</p>
+          <p>Bought groceries for 25 dollars at Walmart</p>
+          <p>Paid 15.50 for lunch yesterday</p>
         </div>
         <div className="mt-3 p-2 bg-blue-50 rounded-lg text-xs">
           <p className="font-medium text-blue-800">🎤 Voice Tips:</p>
           <ul className="text-blue-700 mt-1 space-y-1">
             <li>• Speak naturally - the system will wait for you to finish</li>
             <li>• Include the amount, what you bought, and where</li>
-            <li>• Today's date is used by default (or say "yesterday", "last week", etc.)</li>
+            <li>• Today&apos;s date is used by default (or say &quot;yesterday&quot;, &quot;last week&quot;, etc.)</li>
             <li>• Click the button again to stop early</li>
             <li>• It will automatically stop after 2 seconds of silence</li>
           </ul>

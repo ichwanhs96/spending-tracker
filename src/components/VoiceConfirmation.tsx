@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SpendingCategory, SPENDING_CATEGORIES } from '@/types/spending';
+import { SPENDING_CATEGORIES } from '@/types/spending';
 
 interface ParsedSpending {
   amount: number;
@@ -54,7 +54,7 @@ export default function VoiceConfirmation({
   };
 
   const handleConfirm = () => {
-    const { confidence, ...spendingData } = parsedSpending;
+    const { ...spendingData } = parsedSpending;
     onConfirm(spendingData);
   };
 

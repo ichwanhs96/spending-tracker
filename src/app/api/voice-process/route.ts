@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import natural from 'natural';
 import nlp from 'compromise';
+import 'compromise-numbers';
+import 'compromise-dates';
 
 // Extend compromise with additional plugins
-nlp.extend(require('compromise-numbers'));
-nlp.extend(require('compromise-dates'));
+// Plugins are imported above and automatically extend nlp
 
 interface ParsedSpending {
   amount: number;
@@ -86,6 +87,7 @@ const extractEntities = (text: string): ExtractedEntities => {
   const doc = nlp(text.toLowerCase());
   
   // Use any type to avoid TypeScript issues with compromise plugins
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const docAny = doc as any;
   
   return {
@@ -205,8 +207,10 @@ const calculateConfidence = (entities: ExtractedEntities, amount: number, descri
 };
 
 // Helper to resolve relative date phrases to ISO date string
+// eslint-disable-next-line
 const resolveDate = (text: string, entities: ExtractedEntities): string => {
   const doc = nlp(text.toLowerCase());
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dateJsons = (doc as any).dates ? (doc as any).dates().json() : [];
   if (dateJsons.length > 0 && dateJsons[0].date) {
     // Compromise gives a JS Date object in .date

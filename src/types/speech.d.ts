@@ -6,9 +6,13 @@ interface SpeechRecognition extends EventTarget {
   start(): void;
   stop(): void;
   abort(): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
 }
 
@@ -40,12 +44,12 @@ interface SpeechRecognitionErrorEvent extends Event {
   message: string;
 }
 
-declare var SpeechRecognition: {
+declare let SpeechRecognition: {
   prototype: SpeechRecognition;
   new(): SpeechRecognition;
 };
 
-declare var webkitSpeechRecognition: {
+declare let webkitSpeechRecognition: {
   prototype: SpeechRecognition;
   new(): SpeechRecognition;
 };

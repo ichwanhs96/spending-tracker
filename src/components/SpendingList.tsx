@@ -67,6 +67,7 @@ export default function SpendingList({ entries }: SpendingListProps) {
 
   const hasActiveFilters = startDate || endDate;
 
+  // eslint-disable-next-line
   const showFeedback = (message: string) => {
     setShowFilterFeedback(true);
     setTimeout(() => setShowFilterFeedback(false), 2000);

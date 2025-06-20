@@ -14,6 +14,7 @@ export default function Login() {
     
     try {
       await signInWithGoogle();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Login error:', error);
       setError(error.message || 'Failed to sign in. Please try again.');

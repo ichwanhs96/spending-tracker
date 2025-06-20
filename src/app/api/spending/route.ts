@@ -28,6 +28,7 @@ const getGoogleSheets = () => {
 };
 
 // Helper function to convert sheet data to SpendingEntry objects
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sheetDataToEntries = (data: any[][]): SpendingEntry[] => {
   if (!data || data.length <= 1) return [];
   
@@ -42,6 +43,7 @@ const sheetDataToEntries = (data: any[][]): SpendingEntry[] => {
 };
 
 // Helper function to convert SpendingEntry to sheet row
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const entryToSheetRow = (entry: Omit<SpendingEntry, 'id' | 'timestamp'>): any[] => {
   const id = `entry_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const timestamp = new Date().toISOString();
