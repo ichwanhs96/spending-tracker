@@ -101,46 +101,47 @@ const extractEntities = (text: string): ExtractedEntities => {
 };
 
 // Generate description from extracted entities
+// eslint-disable-next-line
 const generateDescription = (entities: ExtractedEntities, originalText: string): string => {
-  const words = originalText.toLowerCase().split(' ');
+  // const words = originalText.toLowerCase().split(' ');
   
-  // Look for spending-related keywords
-  const spendingKeywords = ['bought', 'purchased', 'spent', 'paid', 'got', 'bought', 'purchase'];
-  const keywordIndex = words.findIndex(word => spendingKeywords.includes(word));
+  // // Look for spending-related keywords
+  // const spendingKeywords = ['bought', 'purchased', 'spent', 'paid', 'got', 'bought', 'purchase'];
+  // const keywordIndex = words.findIndex(word => spendingKeywords.includes(word));
   
-  if (keywordIndex !== -1 && keywordIndex < words.length - 1) {
-    // Extract words after the spending keyword
-    let descriptionWords = words.slice(keywordIndex + 1);
+  // if (keywordIndex !== -1 && keywordIndex < words.length - 1) {
+  //   // Extract words after the spending keyword
+  //   let descriptionWords = words.slice(keywordIndex + 1);
     
-    // Remove amount and currency words
-    const amountWords = entities.amounts.flatMap(amount => amount.split(' '));
-    const currencyWords = entities.currencies.flatMap(currency => currency.split(' '));
-    const moneyWords = entities.money.flatMap(money => money.split(' '));
+  //   // Remove amount and currency words
+  //   const amountWords = entities.amounts.flatMap(amount => amount.split(' '));
+  //   const currencyWords = entities.currencies.flatMap(currency => currency.split(' '));
+  //   const moneyWords = entities.money.flatMap(money => money.split(' '));
     
-    // Filter out amounts, currencies, and common prepositions
-    const filterWords = [...amountWords, ...currencyWords, ...moneyWords, 'on', 'for', 'at', 'in', 'with'];
-    descriptionWords = descriptionWords.filter(word => 
-      !filterWords.includes(word) && 
-      !word.match(/^\d+$/) && // Remove pure numbers
-      !word.match(/^(yen|dollars?|usd|¥|\$)$/i) // Remove currency words
-    );
+  //   // Filter out amounts, currencies, and common prepositions
+  //   const filterWords = [...amountWords, ...currencyWords, ...moneyWords, 'on', 'for', 'at', 'in', 'with'];
+  //   descriptionWords = descriptionWords.filter(word => 
+  //     !filterWords.includes(word) && 
+  //     !word.match(/^\d+$/) && // Remove pure numbers
+  //     !word.match(/^(yen|dollars?|usd|¥|\$)$/i) // Remove currency words
+  //   );
     
-    // If we still have words, return them
-    if (descriptionWords.length > 0) {
-      return descriptionWords.join(' ').trim();
-    }
-  }
+  //   // If we still have words, return them
+  //   if (descriptionWords.length > 0) {
+  //     return descriptionWords.join(' ').trim();
+  //   }
+  // }
   
-  // Fallback: use organizations or places
-  if (entities.organizations.length > 0) {
-    return entities.organizations[0];
-  }
+  // // Fallback: use organizations or places
+  // if (entities.organizations.length > 0) {
+  //   return entities.organizations[0];
+  // }
   
-  if (entities.places.length > 0) {
-    return entities.places[0];
-  }
+  // if (entities.places.length > 0) {
+  //   return entities.places[0];
+  // }
   
-  return 'Voice expense';
+  return originalText;
 };
 
 // Categorize spending based on text content
