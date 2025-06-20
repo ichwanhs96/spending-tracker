@@ -62,7 +62,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
           onChange={(e) => setAmount(e.target.value)}
           step="0.01"
           min="0"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           placeholder="0.00"
           required
         />
@@ -76,7 +76,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
           id="category"
           value={category}
           onChange={(e) => setCategory(e.target.value as SpendingCategory)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
         >
           {SPENDING_CATEGORIES.map((cat) => (
             <option key={cat.value} value={cat.value}>
@@ -95,7 +95,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           placeholder="What did you spend money on?"
           required
         />
@@ -110,7 +110,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
           id="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
           required
         />
       </div>
