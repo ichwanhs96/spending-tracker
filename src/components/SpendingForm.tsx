@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { SpendingCategory, SPENDING_CATEGORIES } from '@/types/spending';
+import { SpendingCategory, SPENDING_CATEGORIES, UserType, USER_OPTIONS } from '@/types/spending';
 
 interface SpendingFormProps {
-  onSubmit: (entry: { amount: number; category: SpendingCategory; description: string; date: string }) => void;
+  onSubmit: (entry: { amount: number; category: SpendingCategory; description: string; date: string; user: UserType }) => void;
 }
 
 export default function SpendingForm({ onSubmit }: SpendingFormProps) {
@@ -12,6 +12,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
   const [category, setCategory] = useState<SpendingCategory>('groceries');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [user, setUser] = useState<UserType>('sharing');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,12 +37,14 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
         category,
         description: description.trim(),
         date,
+        user,
       });
       
       // Reset form
       setAmount('');
       setDescription('');
       setDate(new Date().toISOString().split('T')[0]);
+      setUser('sharing');
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -81,6 +84,24 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
           {SPENDING_CATEGORIES.map((cat) => (
             <option key={cat.value} value={cat.value}>
               {cat.emoji} {cat.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="user" className="block text-sm font-medium text-gray-700 mb-1">
+          User
+        </label>
+        <select
+          id="user"
+          value={user}
+          onChange={(e) => setUser(e.target.value as UserType)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+        >
+          {USER_OPTIONS.map((userOption) => (
+            <option key={userOption.value} value={userOption.value}>
+              {userOption.emoji} {userOption.label}
             </option>
           ))}
         </select>

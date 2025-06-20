@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import VoiceButton from './VoiceButton';
 import VoiceConfirmation from './VoiceConfirmation';
-import { SpendingCategory } from '@/types/spending';
+import { SpendingCategory, UserType } from '@/types/spending';
 
 interface ParsedSpending {
   amount: number;
@@ -13,10 +13,11 @@ interface ParsedSpending {
   location: string;
   date: string;
   confidence: number;
+  user: UserType;
 }
 
 interface VoiceSpendingProps {
-  onSpendingDetected: (spending: { amount: number; category: SpendingCategory; description: string; date: string }) => void;
+  onSpendingDetected: (spending: { amount: number; category: SpendingCategory; description: string; date: string; user: UserType }) => void;
   disabled?: boolean;
 }
 
@@ -54,7 +55,13 @@ export default function VoiceSpending({ onSpendingDetected, disabled = false }: 
         return;
       }
       
-      setParsedSpending(parsed);
+      // Add user field with default value 'sharing'
+      const parsedWithUser = {
+        ...parsed,
+        user: 'sharing' as UserType
+      };
+      
+      setParsedSpending(parsedWithUser);
       setShowConfirmation(true);
     } catch (err) {
       console.error('Error parsing voice input:', err);
@@ -75,6 +82,7 @@ export default function VoiceSpending({ onSpendingDetected, disabled = false }: 
       category: spending.category as SpendingCategory,
       description: spending.description,
       date: spending.date,
+      user: spending.user,
     };
     
     onSpendingDetected(spendingData);
@@ -163,7 +171,7 @@ export default function VoiceSpending({ onSpendingDetected, disabled = false }: 
       <div className="text-center text-sm text-gray-600">
         <p className="mb-2">💡 Try saying something like:</p>
         <div className="space-y-1 text-xs">
-          <p>I spent 680 yen on matcha latte at Doutor</p>
+          <p>I spent 680 yen on coffee this morning</p>
           <p>Bought groceries for 25 dollars at Walmart</p>
           <p>Paid 15.50 for lunch yesterday</p>
         </div>
@@ -173,6 +181,7 @@ export default function VoiceSpending({ onSpendingDetected, disabled = false }: 
             <li>• Speak naturally - the system will wait for you to finish</li>
             <li>• Include the amount, what you bought, and where</li>
             <li>• Today&apos;s date is used by default (or say &quot;yesterday&quot;, &quot;last week&quot;, etc.)</li>
+            <li>• Voice expenses default to &quot;Sharing&quot; category</li>
             <li>• Click the button again to stop early</li>
             <li>• It will automatically stop after 2 seconds of silence</li>
           </ul>

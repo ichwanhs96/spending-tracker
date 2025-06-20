@@ -5,6 +5,7 @@ export interface SpendingEntry {
   description: string;
   date: string;
   timestamp: string;
+  user: UserType;
 }
 
 export type SpendingCategory = 
@@ -19,6 +20,11 @@ export type SpendingCategory =
   | 'education'
   | 'other';
 
+export type UserType = 
+  | 'ichwanharyosembodo96@gmail.com'
+  | 'enowulan1201@gmail.com'
+  | 'sharing';
+
 export const SPENDING_CATEGORIES: { value: SpendingCategory; label: string; emoji: string }[] = [
   { value: 'groceries', label: 'Groceries', emoji: '🛒' },
   { value: 'hobby', label: 'Hobby', emoji: '🎨' },
@@ -30,4 +36,10 @@ export const SPENDING_CATEGORIES: { value: SpendingCategory; label: string; emoj
   { value: 'health', label: 'Health', emoji: '🏥' },
   { value: 'education', label: 'Education', emoji: '📚' },
   { value: 'other', label: 'Other', emoji: '📝' },
+];
+
+export const USER_OPTIONS: { value: UserType; label: string; emoji: string }[] = [
+  { value: 'ichwanharyosembodo96@gmail.com', label: 'Ichwan', emoji: '👨‍💻' },
+  { value: 'enowulan1201@gmail.com', label: 'Eno', emoji: '👩‍💼' },
+  { value: 'sharing', label: 'Sharing', emoji: '🤝' },
 ]; 

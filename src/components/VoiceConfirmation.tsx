@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SPENDING_CATEGORIES } from '@/types/spending';
+import { SPENDING_CATEGORIES, UserType, USER_OPTIONS } from '@/types/spending';
 
 interface ParsedSpending {
   amount: number;
@@ -11,6 +11,7 @@ interface ParsedSpending {
   location: string;
   date: string;
   confidence: number;
+  user: UserType;
 }
 
 interface VoiceConfirmationProps {
@@ -39,6 +40,11 @@ export default function VoiceConfirmation({
   const getCategoryInfo = (category: string) => {
     return SPENDING_CATEGORIES.find(cat => cat.value === category) || 
            { emoji: '📝', label: 'Other' };
+  };
+
+  const getUserInfo = (user: UserType) => {
+    return USER_OPTIONS.find(u => u.value === user) || 
+           { emoji: '🤝', label: 'Sharing' };
   };
 
   const getConfidenceColor = (confidence: number) => {
@@ -127,6 +133,35 @@ export default function VoiceConfirmation({
                 </span>
                 <span className="text-lg font-medium text-gray-900">
                   {getCategoryInfo(parsedSpending.category).label}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* User */}
+        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">User</label>
+            {isEditing ? (
+              <select
+                value={parsedSpending.user}
+                onChange={(e) => onEdit('user', e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              >
+                {USER_OPTIONS.map((userOption) => (
+                  <option key={userOption.value} value={userOption.value}>
+                    {userOption.emoji} {userOption.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="flex items-center mt-1">
+                <span className="text-2xl mr-2">
+                  {getUserInfo(parsedSpending.user).emoji}
+                </span>
+                <span className="text-lg font-medium text-gray-900">
+                  {getUserInfo(parsedSpending.user).label}
                 </span>
               </div>
             )}
