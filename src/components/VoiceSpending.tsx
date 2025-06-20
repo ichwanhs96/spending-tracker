@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import VoiceButton from './VoiceButton';
 import VoiceConfirmation from './VoiceConfirmation';
-import { SpendingCategory, UserType } from '@/types/spending';
+import { SpendingCategory, UserType, CurrencyType } from '@/types/spending';
 
 interface ParsedSpending {
   amount: number;
@@ -17,7 +17,7 @@ interface ParsedSpending {
 }
 
 interface VoiceSpendingProps {
-  onSpendingDetected: (spending: { amount: number; category: SpendingCategory; description: string; date: string; user: UserType }) => void;
+  onSpendingDetected: (spending: { amount: number; category: SpendingCategory; description: string; date: string; user: UserType; currency: CurrencyType }) => void;
   disabled?: boolean;
 }
 
@@ -83,6 +83,7 @@ export default function VoiceSpending({ onSpendingDetected, disabled = false }: 
       description: spending.description,
       date: spending.date,
       user: spending.user,
+      currency: spending.currency as CurrencyType,
     };
     
     onSpendingDetected(spendingData);
@@ -182,6 +183,7 @@ export default function VoiceSpending({ onSpendingDetected, disabled = false }: 
             <li>• Include the amount, what you bought, and where</li>
             <li>• Today&apos;s date is used by default (or say &quot;yesterday&quot;, &quot;last week&quot;, etc.)</li>
             <li>• Voice expenses default to &quot;Sharing&quot; category</li>
+            <li>• Currency is automatically detected from your speech</li>
             <li>• Click the button again to stop early</li>
             <li>• It will automatically stop after 2 seconds of silence</li>
           </ul>

@@ -40,6 +40,7 @@ const sheetDataToEntries = (data: any[][]): SpendingEntry[] => {
     date: row[4] || new Date().toISOString().split('T')[0],
     timestamp: row[5] || new Date().toISOString(),
     user: row[6] || 'sharing',
+    currency: row[7] || 'JPY',
   }));
 };
 
@@ -57,6 +58,7 @@ const entryToSheetRow = (entry: Omit<SpendingEntry, 'id' | 'timestamp'>): any[] 
     entry.date,
     timestamp,
     entry.user,
+    entry.currency,
   ];
 };
 
@@ -79,7 +81,7 @@ export async function GET() {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A:G`,
+      range: `${SHEET_NAME}!A:H`,
     });
 
     const rows = response.data.values || [];
@@ -105,10 +107,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { amount, category, description, date, user } = body;
+    const { amount, category, description, date, user, currency } = body;
 
     // Validate required fields
-    if (!amount || !category || !description || !date || !user) {
+    if (!amount || !category || !description || !date || !user || !currency) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -124,12 +126,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Convert entry to sheet row
-    const row = entryToSheetRow({ amount, category, description, date, user });
+    const row = entryToSheetRow({ amount, category, description, date, user, currency });
 
     // Append to Google Sheet
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A:G`,
+      range: `${SHEET_NAME}!A:H`,
       valueInputOption: 'RAW',
       insertDataOption: 'INSERT_ROWS',
       requestBody: {

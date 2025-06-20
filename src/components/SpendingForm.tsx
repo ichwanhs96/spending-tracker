@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { SpendingCategory, SPENDING_CATEGORIES, UserType, USER_OPTIONS } from '@/types/spending';
+import { SpendingCategory, SPENDING_CATEGORIES, UserType, USER_OPTIONS, CurrencyType, CURRENCY_OPTIONS } from '@/types/spending';
 
 interface SpendingFormProps {
-  onSubmit: (entry: { amount: number; category: SpendingCategory; description: string; date: string; user: UserType }) => void;
+  onSubmit: (entry: { amount: number; category: SpendingCategory; description: string; date: string; user: UserType; currency: CurrencyType }) => void;
 }
 
 export default function SpendingForm({ onSubmit }: SpendingFormProps) {
@@ -13,6 +13,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [user, setUser] = useState<UserType>('sharing');
+  const [currency, setCurrency] = useState<CurrencyType>('JPY');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,6 +39,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
         description: description.trim(),
         date,
         user,
+        currency,
       });
       
       // Reset form
@@ -45,6 +47,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
       setDescription('');
       setDate(new Date().toISOString().split('T')[0]);
       setUser('sharing');
+      setCurrency('JPY');
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -56,7 +59,7 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-          Amount ($)
+          Amount
         </label>
         <input
           type="number"
@@ -69,6 +72,24 @@ export default function SpendingForm({ onSubmit }: SpendingFormProps) {
           placeholder="0.00"
           required
         />
+      </div>
+
+      <div>
+        <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
+          Currency
+        </label>
+        <select
+          id="currency"
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value as CurrencyType)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+        >
+          {CURRENCY_OPTIONS.map((curr) => (
+            <option key={curr.value} value={curr.value}>
+              {curr.emoji} {curr.symbol} {curr.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

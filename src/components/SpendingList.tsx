@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { SpendingEntry, SPENDING_CATEGORIES, USER_OPTIONS } from '@/types/spending';
+import { SpendingEntry, SPENDING_CATEGORIES, USER_OPTIONS, CURRENCY_OPTIONS } from '@/types/spending';
 
 interface SpendingListProps {
   entries: SpendingEntry[];
@@ -23,11 +23,19 @@ export default function SpendingList({ entries }: SpendingListProps) {
            { emoji: '🤝', label: 'Sharing' };
   };
 
-  const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const getCurrencyInfo = (currency: string) => {
+    return CURRENCY_OPTIONS.find(c => c.value === currency) || 
+           { emoji: '🇯🇵', symbol: '¥', label: 'Japanese Yen' };
+  };
+
+  const formatAmount = (amount: number, currency: string) => {
+    const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
-    }).format(amount);
+      currency: currency,
+      minimumFractionDigits: currency === 'JPY' || currency === 'IDR' ? 0 : 2,
+      maximumFractionDigits: currency === 'JPY' || currency === 'IDR' ? 0 : 2,
+    });
+    return formatter.format(amount);
   };
 
   const filteredEntries = useMemo(() => {
@@ -198,7 +206,9 @@ export default function SpendingList({ entries }: SpendingListProps) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-blue-600">Total Expenses</p>
-            <p className="text-2xl font-bold text-blue-900">{formatAmount(totalAmount)}</p>
+            <p className="text-2xl font-bold text-blue-900">
+              {filteredEntries.length > 0 ? formatAmount(totalAmount, filteredEntries[0].currency) : '¥0'}
+            </p>
           </div>
           <div className="text-right">
             <p className="text-sm text-blue-600">Entries</p>
@@ -234,13 +244,18 @@ export default function SpendingList({ entries }: SpendingListProps) {
                           <span className="mr-1">{getUserInfo(entry.user).emoji}</span>
                           {getUserInfo(entry.user).label}
                         </span>
+                        <span>•</span>
+                        <span className="flex items-center">
+                          <span className="mr-1">{getCurrencyInfo(entry.currency).emoji}</span>
+                          {getCurrencyInfo(entry.currency).symbol}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-semibold text-gray-900">
-                    {formatAmount(entry.amount)}
+                    {formatAmount(entry.amount, entry.currency)}
                   </div>
                   <div className="text-sm text-gray-500">
                     {getCategoryInfo(entry.category).label}

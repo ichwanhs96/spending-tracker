@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SPENDING_CATEGORIES, UserType, USER_OPTIONS } from '@/types/spending';
+import { SPENDING_CATEGORIES, UserType, USER_OPTIONS, CURRENCY_OPTIONS } from '@/types/spending';
 
 interface ParsedSpending {
   amount: number;
@@ -32,7 +32,9 @@ export default function VoiceConfirmation({
   const formatAmount = (amount: number, currency: string) => {
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency === 'JPY' ? 'JPY' : 'USD',
+      currency: currency,
+      minimumFractionDigits: currency === 'JPY' || currency === 'IDR' ? 0 : 2,
+      maximumFractionDigits: currency === 'JPY' || currency === 'IDR' ? 0 : 2,
     });
     return formatter.format(amount);
   };
@@ -103,8 +105,11 @@ export default function VoiceConfirmation({
                 onChange={(e) => onEdit('currency', e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               >
-                <option value="USD">USD ($)</option>
-                <option value="JPY">JPY (¥)</option>
+                {CURRENCY_OPTIONS.map((curr) => (
+                  <option key={curr.value} value={curr.value}>
+                    {curr.emoji} {curr.symbol} {curr.label}
+                  </option>
+                ))}
               </select>
             </div>
           )}
