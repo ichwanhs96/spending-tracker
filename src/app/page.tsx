@@ -105,7 +105,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             {/* Logo and Title */}
             <div className="flex items-center">
-              <div className="text-2xl sm:text-3xl mr-3">💰</div>
+              <img src="/konyuu-logo.webp" alt="Konyuu Spending Tracker" className="w-16 h-16 mx-auto" />
               <div className="hidden sm:block">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                   Konyuu
