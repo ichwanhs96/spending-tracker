@@ -64,7 +64,8 @@ export default function SpendingList({ entries }: SpendingListProps) {
       });
     }
 
-    return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Sort by timestamp in descending order (latest first)
+    return filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }, [entries, startDate, endDate, quickFilter]);
 
   const totalAmount = useMemo(() => {
