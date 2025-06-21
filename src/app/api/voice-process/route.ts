@@ -41,6 +41,12 @@ const getClassifier = (): natural.BayesClassifier => {
     classifier.addDocument('pizza burger sandwich sushi ramen', 'dining');
     classifier.addDocument('starbucks doutor coffee shop cafe', 'dining');
     
+    // Coffee (new category)
+    classifier.addDocument('coffee latte espresso cappuccino americano', 'coffee');
+    classifier.addDocument('starbucks doutor tullys coffee shop cafe', 'coffee');
+    classifier.addDocument('coffee bean coffee time coffee break', 'coffee');
+    classifier.addDocument('iced coffee hot coffee coffee drink', 'coffee');
+    
     // Groceries
     classifier.addDocument('grocery food supermarket market store', 'groceries');
     classifier.addDocument('vegetables fruits meat bread milk', 'groceries');
@@ -161,28 +167,41 @@ const categorizeSpending = (text: string, description: string): string => {
 };
 
 // Parse currency and amount from money strings
-const parseMoney = (moneyStrings: string[]): { amount: number; currency: string } => {
-  if (moneyStrings.length === 0) {
-    return { amount: 0, currency: 'USD' };
-  }
-  
-  const moneyStr = moneyStrings[0];
-  
-  // Extract amount (numbers)
-  const amountMatch = moneyStr.match(/(\d+(?:\.\d{2})?)/);
-  const amount = amountMatch ? parseFloat(amountMatch[1]) : 0;
-  
-  // Extract currency
-  const currencyMatch = moneyStr.match(/(yen|dollars?|usd|¥|\$)/i);
+const parseMoney = (moneyStrings: string[], amounts: string[] = []): { amount: number; currency: string } => {
+  let amount = 0;
   let currency = 'USD';
   
-  if (currencyMatch) {
-    const currencyStr = currencyMatch[1].toLowerCase();
-    if (currencyStr === 'yen' || currencyStr === '¥') {
-      currency = 'JPY';
-    } else if (currencyStr === 'dollars' || currencyStr === 'dollar' || currencyStr === 'usd' || currencyStr === '$') {
-      currency = 'USD';
+  // Try to parse from money strings first
+  if (moneyStrings.length > 0) {
+    const moneyStr = moneyStrings[0];
+    
+    // Extract amount (numbers) - updated regex to handle comma-separated numbers
+    // This regex captures digits with optional commas and decimal places
+    const amountMatch = moneyStr.match(/([\d,]+(?:\.\d{2})?)/);
+    if (amountMatch) {
+      // Remove commas and parse as float
+      const cleanAmount = amountMatch[1].replace(/,/g, '');
+      amount = parseFloat(cleanAmount);
     }
+    
+    // Extract currency
+    const currencyMatch = moneyStr.match(/(yen|dollars?|usd|¥|\$)/i);
+    if (currencyMatch) {
+      const currencyStr = currencyMatch[1].toLowerCase();
+      if (currencyStr === 'yen' || currencyStr === '¥') {
+        currency = 'JPY';
+      } else if (currencyStr === 'dollars' || currencyStr === 'dollar' || currencyStr === 'usd' || currencyStr === '$') {
+        currency = 'USD';
+      }
+    }
+  }
+  
+  // Fallback: if no amount found in money strings, try amounts array
+  if (amount <= 0 && amounts.length > 0) {
+    const amountStr = amounts[0];
+    // Remove commas and parse as float
+    const cleanAmount = amountStr.replace(/,/g, '');
+    amount = parseFloat(cleanAmount);
   }
   
   return { amount, currency };
@@ -227,7 +246,7 @@ const resolveDate = (text: string, entities: ExtractedEntities): string => {
 // Main parsing function
 const parseVoiceSpending = (text: string): ParsedSpending => {
   const entities = extractEntities(text);
-  const { amount, currency } = parseMoney(entities.money);
+  const { amount, currency } = parseMoney(entities.money, entities.amounts);
   const description = generateDescription(entities, text);
   const category = categorizeSpending(text, description);
   

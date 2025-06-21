@@ -19,6 +19,7 @@ export type SpendingCategory =
   | 'shopping'
   | 'health'
   | 'education'
+  | 'coffee'
   | 'other';
 
 export type UserType = 
@@ -41,6 +42,7 @@ export const SPENDING_CATEGORIES: { value: SpendingCategory; label: string; emoj
   { value: 'shopping', label: 'Shopping', emoji: '🛍️' },
   { value: 'health', label: 'Health', emoji: '🏥' },
   { value: 'education', label: 'Education', emoji: '📚' },
+  { value: 'coffee', label: 'Coffee', emoji: '☕' },
   { value: 'other', label: 'Other', emoji: '📝' },
 ];
 
