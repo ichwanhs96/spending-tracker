@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import SpendingForm from '@/components/SpendingForm';
 import SpendingList from '@/components/SpendingList';
 import SpendingCharts from '@/components/SpendingCharts';
 import VoiceSpending from '@/components/VoiceSpending';
+import BillScan from '@/components/BillScan';
 import Login from '@/components/Login';
 import { useAuth } from '@/contexts/AuthContext';
 import { SpendingEntry } from '@/types/spending';
@@ -13,8 +14,61 @@ export default function Home() {
   const { user, loading, logout, isAuthorized } = useAuth();
   const [spendingEntries, setSpendingEntries] = useState<SpendingEntry[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'manual' | 'voice'>('voice');
+  const [activeTab, setActiveTab] = useState<'manual' | 'voice' | 'bill-scan'>('voice');
   const [activeView, setActiveView] = useState<'list' | 'charts'>('list');
+  
+  // Filter state
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [quickFilter, setQuickFilter] = useState<'7days' | '30days' | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Filtered entries
+  const filteredEntries = useMemo(() => {
+    let filtered = [...spendingEntries];
+
+    if (startDate && endDate) {
+      filtered = filtered.filter(entry => {
+        const entryDate = new Date(entry.date);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return entryDate >= start && entryDate <= end;
+      });
+    } else if (quickFilter === '7days') {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      filtered = filtered.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate >= sevenDaysAgo;
+      });
+    } else if (quickFilter === '30days') {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      filtered = filtered.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate >= thirtyDaysAgo;
+      });
+    }
+
+    // Sort by timestamp in descending order (latest first)
+    return filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [spendingEntries, startDate, endDate, quickFilter]);
+
+  const handleQuickFilter = (filter: '7days' | '30days') => {
+    setQuickFilter(filter);
+    setStartDate('');
+    setEndDate('');
+  };
+
+  const clearFilters = () => {
+    setStartDate('');
+    setEndDate('');
+    setQuickFilter(null);
+  };
+
+  const handleDateChange = () => {
+    setQuickFilter(null);
+  };
 
   useEffect(() => {
     if (isAuthorized) {
@@ -218,11 +272,23 @@ export default function Home() {
                 >
                   📝 Manual Entry
                 </button>
+                <button
+                  onClick={() => setActiveTab('bill-scan')}
+                  className={`flex-1 py-2 px-3 sm:px-4 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+                    activeTab === 'bill-scan'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  📸 Bill Scan (beta)
+                </button>
               </div>
 
               {/* Tab Content */}
               {activeTab === 'voice' ? (
                 <VoiceSpending onSpendingDetected={handleAddSpending} />
+              ) : activeTab === 'bill-scan' ? (
+                <BillScan onSpendingDetected={handleAddSpending} />
               ) : (
                 <SpendingForm onSubmit={handleAddSpending} />
               )}
@@ -258,15 +324,117 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+
+              {/* Filter Controls */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900">Filters</h3>
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 px-2 py-1 rounded"
+                  >
+                    {showFilters ? 'Hide' : 'Show'} filters
+                  </button>
+                </div>
+
+                {showFilters && (
+                  <div className="space-y-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                    {/* Quick Filters */}
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Quick Filters</label>
+                      <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
+                        <button
+                          onClick={() => handleQuickFilter('7days')}
+                          className={`px-3 py-2 text-xs sm:text-sm rounded-md transition-colors ${
+                            quickFilter === '7days'
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          Last 7 days
+                        </button>
+                        <button
+                          onClick={() => handleQuickFilter('30days')}
+                          className={`px-3 py-2 text-xs sm:text-sm rounded-md transition-colors ${
+                            quickFilter === '30days'
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          Last 30 days
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Date Range */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                            handleDateChange();
+                          }}
+                          className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">End Date</label>
+                        <input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => {
+                            setEndDate(e.target.value);
+                            handleDateChange();
+                          }}
+                          className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Clear Filters */}
+                    {(startDate || endDate || quickFilter) && (
+                      <button
+                        onClick={clearFilters}
+                        className="w-full px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-xs sm:text-sm"
+                      >
+                        Clear Filters
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Active Filter Feedback */}
+                {quickFilter && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div className="flex items-center">
+                        <span className="text-blue-600 mr-2">✓</span>
+                        <span className="text-blue-800 text-xs sm:text-sm">
+                          Showing expenses from the last {quickFilter === '7days' ? '7' : '30'} days
+                        </span>
+                      </div>
+                      <button
+                        onClick={clearFilters}
+                        className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm self-start sm:self-auto"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
               
               {dataLoading ? (
                 <div className="flex justify-center items-center h-32">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 </div>
               ) : activeView === 'list' ? (
-                <SpendingList entries={spendingEntries} />
+                <SpendingList entries={filteredEntries} />
               ) : (
-                <SpendingCharts entries={spendingEntries} />
+                <SpendingCharts entries={filteredEntries} />
               )}
             </div>
           </div>
